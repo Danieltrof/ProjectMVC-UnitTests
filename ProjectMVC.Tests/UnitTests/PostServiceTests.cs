@@ -28,7 +28,7 @@ public class PostServiceTests
         _postService = new PostService(_postRepositoryMock.Object, _httpContextAccessorMock.Object, _authorizationServiceMock.Object, _loggerMock.Object);
     }
 
-    //Tests the GetAllPostsAsync method when the user is authenticated (Positive test)
+    //Tests the GetAllPostsAsync method when the user is authenticated (Positive test READ)
     [Fact]
     public async Task GetAllPostsAsync_ShouldReturnPosts_WhenUserIsAuthenticated()
     {
@@ -84,22 +84,22 @@ public class PostServiceTests
         Assert.Single(result[0].Comments);
     }
 
-    //Testing the GetAllPostsAsync method when the user is NOT authenticated (Negative test)
+    //Testing the GetAllPostsAsync method when the user is NOT authenticated (Negative test READ)
     [Fact]
     public async Task CreatePostAsync_ShouldReturnFailure_WhenUserIsNotAuthenticated()
     {
-        // Notice how we dont make a new application user, which means we are trying to upload without authentication
+        //Notice how we dont make a new application user, which means we are trying to upload without authentication
         _httpContextAccessorMock.Setup(h => h.HttpContext.User).Returns((ClaimsPrincipal)null);
         var dto = new PostCreateDto { Title = "New Post" };
 
         var result = await _postService.CreatePostAsync(dto);
 
-        // Verifying the error response
+        //Verifying the error response
         Assert.False(result.Succeeded);
         Assert.Equal("You need to be logged in to create posts", result.Error);
     }
 
-    //Testing the CreatePostAsync method when the input is valid (positive)
+    //Testing the CreatePostAsync method when the input is valid (positive CREATE)
     [Fact]
     public async Task CreatePostAsync_ShouldCreatePost_WhenValidInputProvided()
     {
@@ -112,20 +112,20 @@ public class PostServiceTests
 
         _postRepositoryMock.Setup(repo => repo.AddPostAsync(It.IsAny<Post>())).Returns(Task.CompletedTask);
 
-        // Call method
+        //Calling method
         var result = await _postService.CreatePostAsync(dto);
 
-        // Verifying if post is created
+        //Verifying if post is created
         Assert.True(result.Succeeded);
         Assert.Equal("Post created successfully", result.SuccessMessage);
         _postRepositoryMock.Verify(repo => repo.AddPostAsync(It.IsAny<Post>()), Times.Once);
     }
 
-    //Testing the UpdatePostAsync method if post doesnt exist (negative)
+    //Testing the UpdatePostAsync method if post doesnt exist (negative UPDATE)
     [Fact]
     public async Task UpdatePostAsync_ShouldReturnFailure_WhenPostDoesNotExist()
     {
-        // Trying to update title for a non existent post, hence null
+        //Trying to update title for a non existent post, hence null
         _postRepositoryMock.Setup(repo => repo.GetPostByIdAsync(1)).ReturnsAsync((Post)null);
         var dto = new PostUpdateDto { Title = "Updated Title" };
 
@@ -135,11 +135,11 @@ public class PostServiceTests
         Assert.Equal("Post does not exist", result.Error);
     }
 
-    //Testing the deletepostAsync method when the user is NOT authorized, e.g. if ordinary user can delete posts of other ordinary users. (Negative)
+    //Testing the deletepostAsync method when the user is NOT authorized, e.g. if ordinary user can delete posts of other ordinary users. (Negative DELETE)
     [Fact]
     public async Task DeletePostAsync_ShouldReturnFailure_WhenUserNotAuthorized()
     {
-        // Setting up two different users and one post
+        //Setting up two different users and one post
         var userId = "user123";
         var post = new Post { Id = 1, UserId = "differentUser" };
 
