@@ -126,6 +126,16 @@ public class PostRepositoryTests
         Assert.Equal("New Post", addedPost.Title);
     }
 
+    //Tests if AddPostAsync recognizes null input when creating posts. Negative test for CREATE
+    [Fact]
+    public async Task AddPostAsync_ShouldThrowException_WhenPostIsInvalid()
+    {
+        var context = GetInMemoryDbContext();
+        var repository = new PostRepository(context);
+
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await repository.AddPostAsync(null));
+    }
+
     //Tests if UpdatePostAsync lets users update their posts. Positive test for UPDATE
     [Fact]
     public async Task UpdatePostAsync_ShouldUpdatePost_WhenPostExists()
