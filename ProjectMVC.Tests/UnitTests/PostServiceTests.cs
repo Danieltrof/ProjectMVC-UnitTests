@@ -84,7 +84,7 @@ public class PostServiceTests
         Assert.Single(result[0].Comments);
     }
 
-    //Testing the GetAllPostsAsync method when the user is NOT authenticated (Negative test READ)
+    //Testing the CreatePostAsync method when the user is NOT authenticated (Negative test CREATE)
     [Fact]
     public async Task CreatePostAsync_ShouldReturnFailure_WhenUserIsNotAuthenticated()
     {
